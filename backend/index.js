@@ -4,9 +4,10 @@ const morgan = require('morgan')
 const cors = require('cors')
 const Contact = require('./models/contact')
 
+const app = express()
+
 app.use(express.static('dist'))
 
-const app = express()
 
 app.use(express.json())
 app.use(cors())
