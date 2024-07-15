@@ -1,19 +1,16 @@
+require ('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const mongoose = require('mongoose')
 
-const password = process.argv[2]
 const url = process.env.MONGODB_URL
-const app = express()
 
-if (process.argv.length<3) {
-  console.log('give password as argument')
-  process.exit(1)
-}
+const app = express()
 
 mongoose.set('strictQuery',false)
 
+console.log(url)
 mongoose.connect(url)
 
 const contactSchema = new mongoose.Schema({
@@ -56,7 +53,7 @@ let persons = [
 ]
 
 app.get('/api/persons', (request, response) => {
-  contactSchema.find({}).then(contacts => {
+  Contact.find({}).then(contacts => {
     response.json(contacts)
   })
 })
