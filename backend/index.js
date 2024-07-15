@@ -2,23 +2,9 @@ require ('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
-const mongoose = require('mongoose')
-
-const url = process.env.MONGODB_URL
+const Contact = require('./models/contact')
 
 const app = express()
-
-mongoose.set('strictQuery',false)
-
-console.log(url)
-mongoose.connect(url)
-
-const contactSchema = new mongoose.Schema({
-  name: String,
-  number: String,
-})
-
-const Contact = mongoose.model('Contact', contactSchema)
 
 app.use(express.json())
 app.use(cors())
@@ -67,14 +53,9 @@ app.get('/info', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {
-  const id = String(request.params.id)
-  const person = persons.find(p => p.id === id)
-
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
+  Contact.findById(request.params.id).then(contact => {
+    response.json(contact)
+  })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -92,7 +73,7 @@ app.delete('/api/persons/:id', (request, response) => {
 app.post('/api/persons', (request, response) => {
   const body = request.body;
 
-  if (!body.name || !body.number) {
+  if (body.name === undefined) {
     return response.status(404).json({
       "error": "content missing",
     })
@@ -100,15 +81,14 @@ app.post('/api/persons', (request, response) => {
      return response.status(400).end()
   }
 
-  const id = Math.floor(1000000 * Math.random())
-
-  const person = {
-    id: id.toString(),
+  const contact = new Contact({
     name: body.name,
     number: body.number,
-  }
-  persons = persons.concat(person)
-  response.json(person)
+  })
+
+  contact.save().then(savedContact => {
+    response.json(savedContact)
+  })
 })
 
 const unknownEndpoint = (request, response) => {
