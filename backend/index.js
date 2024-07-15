@@ -4,6 +4,8 @@ const morgan = require('morgan')
 const cors = require('cors')
 const Contact = require('./models/contact')
 
+app.use(express.static('dist'))
+
 const app = express()
 
 app.use(express.json())
@@ -15,33 +17,10 @@ morgan.token('person', function(req, res) {
   return JSON.stringify(req.body)
 })
 
-let persons = [
-  { 
-    "id": "1",
-    "name": "Arto Hellas", 
-    "number": "040-123456"
-  },
-  { 
-    "id": "2",
-    "name": "Ada Lovelace", 
-    "number": "39-44-5323523"
-  },
-  { 
-    "id": "3",
-    "name": "Dan Abramov", 
-    "number": "12-43-234345"
-  },
-  { 
-    "id": "4",
-    "name": "Mary Poppendieck", 
-    "number": "39-23-6423122"
-  }
-]
-
 app.get('/api/persons', (request, response) => {
   Contact.find({}).then(contacts => {
     response.json(contacts)
-  })
+  }).catch(error => alert(error))
 })
 
 app.get('/info', (request, response) => {
@@ -54,7 +33,7 @@ app.get('/info', (request, response) => {
 
 app.get('/api/persons/:id', (request, response) => {
   Contact.findById(request.params.id).then(contact => {
-    response.json(contact)
+    response.json(contact.toJSON())
   })
 })
 
