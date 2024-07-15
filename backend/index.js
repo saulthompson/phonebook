@@ -1,8 +1,27 @@
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const mongoose = require('mongoose')
 
+const password = process.argv[2]
+const url = process.env.MONGODB_URL
 const app = express()
+
+if (process.argv.length<3) {
+  console.log('give password as argument')
+  process.exit(1)
+}
+
+mongoose.set('strictQuery',false)
+
+mongoose.connect(url)
+
+const contactSchema = new mongoose.Schema({
+  name: String,
+  number: String,
+})
+
+const Contact = mongoose.model('Contact', contactSchema)
 
 app.use(express.json())
 app.use(cors())
@@ -37,7 +56,9 @@ let persons = [
 ]
 
 app.get('/api/persons', (request, response) => {
-  response.json(persons)
+  contactSchema.find({}).then(contacts => {
+    response.json(contacts)
+  })
 })
 
 app.get('/info', (request, response) => {
