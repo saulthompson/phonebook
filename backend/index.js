@@ -53,22 +53,30 @@ app.delete('/api/persons/:id', (request, response) => {
 app.post('/api/persons', (request, response) => {
   const body = request.body;
 
-  if (body.name === undefined) {
+  if (body.name === undefined || body.number === undefined) {
     return response.status(404).json({
       "error": "content missing",
     })
-  } else if (persons.findIndex(p => p.name === body.name !== -1)) {
-     return response.status(400).end()
-  }
+  } Contact.findOne({ name: body.name })
+  .then(existingContact => {
+    if (existingContact) {
+      return response.status(400).json({
+        error: 'name must be unique'
+      });
+    }
 
-  const contact = new Contact({
-    name: body.name,
-    number: body.number,
-  })
+    const contact = new Contact({
+      name: body.name,
+      number: body.number,
+    });
 
-  contact.save().then(savedContact => {
-    response.json(savedContact)
+    contact.save()
+      .then(savedContact => {
+        response.json(savedContact);
+      })
+      .catch(error => next(error)); // Pass any errors to the error handler
   })
+  .catch(error => next(error)); // Pass any errors to the error handler
 })
 
 const unknownEndpoint = (request, response) => {
