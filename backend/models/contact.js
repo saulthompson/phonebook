@@ -1,21 +1,17 @@
-
 const mongoose = require('mongoose')
 
-mongoose.set('strictQuery',false)
-
-const url = process.env.MONGODB_URL
-
-mongoose.connect(url)
-  .then(result => {
-    console.log('connected to MongoDB')
-  })
-  .catch(error => {
-    console.log('error connecting to MongoDB:', error.message)
-  })
 
 const contactSchema = new mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    minLength: 2,
+    required: true,
+  },
   number: String,
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
 })
 
 contactSchema.set('toJSON', {
@@ -25,6 +21,5 @@ contactSchema.set('toJSON', {
     delete returnedObject.__v
   }
 })
-
 
 module.exports = mongoose.model('Contact', contactSchema)
