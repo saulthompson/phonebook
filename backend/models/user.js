@@ -1,23 +1,21 @@
-const Pool = require('pg').Pool
+const { Pool } = require('pg')
+const config = require('../utils/config')
 
-const pool = new Pool();
+const pool = new Pool({
+  user: config.PGUSER,
+  host: config.PGHOST,
+  database: config.PGDATABASE,
+  password: config.PGPASSWORD,
+  port: config.PGPORT,
+})
 
-const getUsers = async() => {
+const getUsers = async () => {
   try {
-    return await new Promise(function (resolve, reject) {
-      pool.query("SELECT * FROM users", (error, results) => {
-        if (error) {
-          reject(error)
-        }
-        if (results && results.rows) {
-          resolve(results.rows)
-        } else {
-          reject(new Error("no results found"))
-        }
-      })
-    })
-  } catch (error_1) {
-    console.error(error_1)
+    const results = await pool.query("SELECT * FROM usernames")
+    console.log('results here', results)
+    return results.rows
+  } catch (error) {
+    console.error(error)
     throw new Error("internal server error")
   }
 }

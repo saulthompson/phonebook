@@ -1,16 +1,16 @@
-const bcrypt = require('bcrypt')
+// const bcrypt = require('bcrypt')
 const usersRouter = require('express').Router()
-const User = require('../models/user')
+const { getUsers } = require('../models/user')
 
-usersRouter.get('/', (req, res) => {
-  User.getUsers()
-    .then(response => {
-      res.status(200).send(response)
-    })
-    .catch(error => {
-      res.status(500).send(error)
-    })
+usersRouter.get('/', async (req, res) => {
+  try {
+    const users = await getUsers()
+    res.status(200).json(users)
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
 })
+
 
 // usersRouter.post('/', async (request, response, next) => {
 //   const { username, name, password } = request.body
@@ -39,4 +39,4 @@ usersRouter.get('/', (req, res) => {
 // })
 
 
-// module.exports = usersRouter
+module.exports = usersRouter
