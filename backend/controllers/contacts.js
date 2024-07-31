@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken')
 
 const getTokenFrom = request => {
   const authorization = request.get('authorization')
+  console.log('autho', authorization)
   if (authorization && authorization.startsWith('Bearer ')) {
     return authorization.replace('Bearer ', '')
   }
@@ -43,13 +44,14 @@ contactsRouter.delete('/:id', (request, response, next) => {
 
 contactsRouter.post('/', async(request, response, next) => {
   const body = request.body;
+  console.log('body: ', body)
 
-  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
-  console.log('token log', decodedToken)
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: 'token invalid' })
-  }
-  const user = await User.findById(decodedToken.id)
+  // const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+  // console.log('token log', decodedToken)
+  // if (!decodedToken.id) {
+  //   return response.status(401).json({ error: 'token invalid' })
+  // }
+  // const user = await User.findById(decodedToken.id)
 
   let existingContact = await Contact.findOne({ name: body.name })
   if (existingContact) {
@@ -59,18 +61,18 @@ contactsRouter.post('/', async(request, response, next) => {
   }
 
   try{
-    const user = await User.findById(body.userId)
-      console.log('user here', user)
+    // const user = await User.findById(body.userId)
+    //   console.log('user here', user)
       const contact = new Contact({
         name: body.name,
         number: body.number,
-        userId: user.id
+        // userId: user.id
       });
 
       const savedContact = await contact.save()
 
-      user.contacts = user.contacts.concat(savedContact._id)
-      await user.save()
+      // user.contacts = user.contacts.concat(savedContact._id)
+      // await user.save()
       response.status(201).json(savedContact);
     }
       catch(error) {next(error)}
