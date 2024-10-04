@@ -2,6 +2,44 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import phonebookService from './services/phonebook'
 
+function TestErrorComponent() {
+  useEffect(() => {
+    // Dynamically load the Sentry script
+    const script = document.createElement('script');
+    script.src = 'https://js.sentry-cdn.com/b666700b47e37166444af04d05f35520.min.js';
+    script.crossOrigin = 'anonymous';
+    document.body.appendChild(script);
+
+    // Wait for the script to load before adding the event listener
+    script.onload = () => {
+      console.log('Sentry script loaded.');
+
+      // Add event listener to the button
+      const button = document.getElementById('test-error');
+      if (button) {
+        button.addEventListener('click', () => {
+          throw new Error('This is a test error');
+        });
+      }
+    };
+
+    // Clean up the script when component unmounts
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  return (
+    <div>
+      <h1>Trigger Test Error</h1>
+      <button id="test-error">Trigger Test Error</button>
+    </div>
+  );
+}
+
+export default TestErrorComponent;
+
+
 const SearchBar = ({filterText, handleFilterText}) => {
   return (
     <div>
@@ -124,6 +162,7 @@ const App = () => {
           return <Person key={person.name} person={person} />
         })}
       </ul>
+      < TestErrorComponent />
     </div>
   )
 }
