@@ -5,6 +5,7 @@ const { getUsers } = require('../models/user')
 usersRouter.get('/', async (req, res) => {
   try {
     const users = await getUsers()
+    console.log('users:', users)
     res.status(200).json(users)
   } catch (error) {
     res.status(500).json({ error: error.message })

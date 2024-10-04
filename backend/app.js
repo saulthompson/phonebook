@@ -1,3 +1,4 @@
+require('./instrument.js');
 const config = require('./utils/config')
 const logger = require('./utils/logger')
 const morgan = require('morgan')
@@ -7,6 +8,7 @@ const loginRouter = require('./controllers/login')
 const contactsRouter = require('./controllers/contacts')
 const usersRouter = require('./controllers/users')
 const mongoose = require('mongoose')
+const Sentry = require("@sentry/node");
 const express = require('express')
 
 // const relDbConnection = async() => {
@@ -30,6 +32,7 @@ app.use('/api/users', usersRouter)
 app.use(express.static('dist'))
 app.use(cors())
 
+Sentry.setupExpressErrorHandler(app);
 // app.use(morgan(':person'))
 
 mongoose.set('strictQuery', false)
@@ -55,5 +58,3 @@ morgan.token('person', function(req, res) {
 app.use(middleware.requestLogger)
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
-
-module.exports = app
