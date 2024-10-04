@@ -37,9 +37,6 @@ function TestErrorComponent() {
   );
 }
 
-export default TestErrorComponent;
-
-
 const SearchBar = ({filterText, handleFilterText}) => {
   return (
     <div>
